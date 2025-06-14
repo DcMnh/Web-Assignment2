@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ViewSliderTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputText value="#{bundle.ViewSliderLabel_id}"/>
+                    <h:outputText value="#{sliderController.selected.id}" title="#{bundle.ViewSliderTitle_id}"/>
+                    <h:outputText value="#{bundle.ViewSliderLabel_size}"/>
+                    <h:outputText value="#{sliderController.selected.size}" title="#{bundle.ViewSliderTitle_size}"/>
+                    <h:outputText value="#{bundle.ViewSliderLabel_x}"/>
+                    <h:outputText value="#{sliderController.selected.x}" title="#{bundle.ViewSliderTitle_x}"/>
+                    <h:outputText value="#{bundle.ViewSliderLabel_y}"/>
+                    <h:outputText value="#{sliderController.selected.y}" title="#{bundle.ViewSliderTitle_y}"/>
+                    <h:outputText value="#{bundle.ViewSliderLabel_maxTravel}"/>
+                    <h:outputText value="#{sliderController.selected.maxTravel}" title="#{bundle.ViewSliderTitle_maxTravel}"/>
+                    <h:outputText value="#{bundle.ViewSliderLabel_currentTravel}"/>
+                    <h:outputText value="#{sliderController.selected.currentTravel}" title="#{bundle.ViewSliderTitle_currentTravel}"/>
+                    <h:outputText value="#{bundle.ViewSliderLabel_mvtDirection}"/>
+                    <h:outputText value="#{sliderController.selected.mvtDirection}" title="#{bundle.ViewSliderTitle_mvtDirection}"/>
+                    <h:outputText value="#{bundle.ViewSliderLabel_dirChangeCount}"/>
+                    <h:outputText value="#{sliderController.selected.dirChangeCount}" title="#{bundle.ViewSliderTitle_dirChangeCount}"/>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{sliderController.destroyAndView}" value="#{bundle.ViewSliderDestroyLink}"/>
+                <br />
+                <br />
+                <h:link outcome="Edit" value="#{bundle.ViewSliderEditLink}"/>
+                <br />
+                <h:commandLink action="#{sliderController.prepareCreate}" value="#{bundle.ViewSliderCreateLink}" />
+                <br />
+                <h:commandLink action="#{sliderController.prepareList}" value="#{bundle.ViewSliderShowAllLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{bundle.ViewSliderIndexLink}"/>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

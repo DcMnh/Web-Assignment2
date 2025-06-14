@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.EditSliderTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{bundle.EditSliderLabel_id}" for="id" />
+                    <h:inputText id="id" value="#{sliderController.selected.id}" title="#{bundle.EditSliderTitle_id}" />
+                    <h:outputLabel value="#{bundle.EditSliderLabel_size}" for="size" />
+                    <h:inputText id="size" value="#{sliderController.selected.size}" title="#{bundle.EditSliderTitle_size}" />
+                    <h:outputLabel value="#{bundle.EditSliderLabel_x}" for="x" />
+                    <h:inputText id="x" value="#{sliderController.selected.x}" title="#{bundle.EditSliderTitle_x}" />
+                    <h:outputLabel value="#{bundle.EditSliderLabel_y}" for="y" />
+                    <h:inputText id="y" value="#{sliderController.selected.y}" title="#{bundle.EditSliderTitle_y}" />
+                    <h:outputLabel value="#{bundle.EditSliderLabel_maxTravel}" for="maxTravel" />
+                    <h:inputText id="maxTravel" value="#{sliderController.selected.maxTravel}" title="#{bundle.EditSliderTitle_maxTravel}" />
+                    <h:outputLabel value="#{bundle.EditSliderLabel_currentTravel}" for="currentTravel" />
+                    <h:inputText id="currentTravel" value="#{sliderController.selected.currentTravel}" title="#{bundle.EditSliderTitle_currentTravel}" />
+                    <h:outputLabel value="#{bundle.EditSliderLabel_mvtDirection}" for="mvtDirection" />
+                    <h:inputText id="mvtDirection" value="#{sliderController.selected.mvtDirection}" title="#{bundle.EditSliderTitle_mvtDirection}" />
+                    <h:outputLabel value="#{bundle.EditSliderLabel_dirChangeCount}" for="dirChangeCount" />
+                    <h:inputText id="dirChangeCount" value="#{sliderController.selected.dirChangeCount}" title="#{bundle.EditSliderTitle_dirChangeCount}" />
+                </h:panelGrid>
+                <h:commandLink action="#{sliderController.update}" value="#{bundle.EditSliderSaveLink}"/>
+                <br />
+                <br />
+                <h:link outcome="View" value="#{bundle.EditSliderViewLink}"/>
+                <br />
+                <h:commandLink action="#{sliderController.prepareList}" value="#{bundle.EditSliderShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{bundle.EditSliderIndexLink}" />
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

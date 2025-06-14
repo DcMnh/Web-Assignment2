@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ListSliderTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:form styleClass="jsfcrud_list_form">
+                <h:panelGroup id="messagePanel" layout="block">
+                    <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+                </h:panelGroup>
+                <h:outputText escape="false" value="#{bundle.ListSliderEmpty}" rendered="#{sliderController.items.rowCount == 0}"/>
+                <h:panelGroup rendered="#{sliderController.items.rowCount > 0}">
+                    <h:outputText value="#{sliderController.pagination.pageFirstItem + 1}..#{sliderController.pagination.pageLastItem + 1}/#{sliderController.pagination.itemsCount}"/>&nbsp;
+                    <h:commandLink action="#{sliderController.previous}" value="#{bundle.Previous} #{sliderController.pagination.pageSize}" rendered="#{sliderController.pagination.hasPreviousPage}"/>&nbsp;
+                    <h:commandLink action="#{sliderController.next}" value="#{bundle.Next} #{sliderController.pagination.pageSize}" rendered="#{sliderController.pagination.hasNextPage}"/>&nbsp;
+                    <h:dataTable value="#{sliderController.items}" var="item" border="0" cellpadding="2" cellspacing="0" rowClasses="jsfcrud_odd_row,jsfcrud_even_row" rules="all" style="border:solid 1px">
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListSliderTitle_id}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.id}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListSliderTitle_size}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.size}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListSliderTitle_x}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.x}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListSliderTitle_y}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.y}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListSliderTitle_maxTravel}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.maxTravel}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListSliderTitle_currentTravel}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.currentTravel}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListSliderTitle_mvtDirection}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.mvtDirection}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListSliderTitle_dirChangeCount}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.dirChangeCount}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="&nbsp;"/>
+                            </f:facet>
+                            <h:commandLink action="#{sliderController.prepareView}" value="#{bundle.ListSliderViewLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{sliderController.prepareEdit}" value="#{bundle.ListSliderEditLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{sliderController.destroy}" value="#{bundle.ListSliderDestroyLink}"/>
+                        </h:column>
+                    </h:dataTable>
+                </h:panelGroup>
+                <br />
+                <h:commandLink action="#{sliderController.prepareCreate}" value="#{bundle.ListSliderCreateLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{bundle.ListSliderIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

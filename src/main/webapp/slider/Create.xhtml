@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.CreateSliderTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{bundle.CreateSliderLabel_id}" for="id" />
+                    <h:inputText id="id" value="#{sliderController.selected.id}" title="#{bundle.CreateSliderTitle_id}" />
+                    <h:outputLabel value="#{bundle.CreateSliderLabel_size}" for="size" />
+                    <h:inputText id="size" value="#{sliderController.selected.size}" title="#{bundle.CreateSliderTitle_size}" />
+                    <h:outputLabel value="#{bundle.CreateSliderLabel_x}" for="x" />
+                    <h:inputText id="x" value="#{sliderController.selected.x}" title="#{bundle.CreateSliderTitle_x}" />
+                    <h:outputLabel value="#{bundle.CreateSliderLabel_y}" for="y" />
+                    <h:inputText id="y" value="#{sliderController.selected.y}" title="#{bundle.CreateSliderTitle_y}" />
+                    <h:outputLabel value="#{bundle.CreateSliderLabel_maxTravel}" for="maxTravel" />
+                    <h:inputText id="maxTravel" value="#{sliderController.selected.maxTravel}" title="#{bundle.CreateSliderTitle_maxTravel}" />
+                    <h:outputLabel value="#{bundle.CreateSliderLabel_currentTravel}" for="currentTravel" />
+                    <h:inputText id="currentTravel" value="#{sliderController.selected.currentTravel}" title="#{bundle.CreateSliderTitle_currentTravel}" />
+                    <h:outputLabel value="#{bundle.CreateSliderLabel_mvtDirection}" for="mvtDirection" />
+                    <h:inputText id="mvtDirection" value="#{sliderController.selected.mvtDirection}" title="#{bundle.CreateSliderTitle_mvtDirection}" />
+                    <h:outputLabel value="#{bundle.CreateSliderLabel_dirChangeCount}" for="dirChangeCount" />
+                    <h:inputText id="dirChangeCount" value="#{sliderController.selected.dirChangeCount}" title="#{bundle.CreateSliderTitle_dirChangeCount}" />
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{sliderController.create}" value="#{bundle.CreateSliderSaveLink}" />
+                <br />
+                <br />
+                <h:commandLink action="#{sliderController.prepareList}" value="#{bundle.CreateSliderShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{bundle.CreateSliderIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>
