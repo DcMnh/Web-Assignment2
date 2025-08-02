@@ -31,6 +31,9 @@ public class SliderSwingClient {
         JTextField xField = new JTextField(5);
         JTextField yField = new JTextField(5);
         JButton update = new JButton("Update Slider");
+        
+        // Make frame effectively final for lambda expressions
+        final JFrame finalFrame = frame;
 
         update.addActionListener((ActionEvent e) -> {
             try {
@@ -53,12 +56,13 @@ public class SliderSwingClient {
 
                 CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                         .thenAccept(resp -> {
-                            String msg = "Status: " + resp.statusCode() + "\n";
+                            String responseMessage = "Status: " + resp.statusCode() + "\n";
                             if (resp.body() != null && !resp.body().isEmpty()) {
-                                msg += "Response: " + resp.body();
+                                responseMessage += "Response: " + resp.body();
                             }
+                            final String finalMessage = responseMessage;
                             SwingUtilities.invokeLater(() -> {
-                                JOptionPane.showMessageDialog(frame, msg,
+                                JOptionPane.showMessageDialog(finalFrame, finalMessage,
                                         resp.statusCode() >= 200 && resp.statusCode() < 300 ? "Success" : "Error",
                                         resp.statusCode() >= 200 && resp.statusCode() < 300 ? JOptionPane.INFORMATION_MESSAGE
                                                 : JOptionPane.ERROR_MESSAGE);
@@ -66,12 +70,12 @@ public class SliderSwingClient {
                         })
                         .exceptionally(ex -> {
                             SwingUtilities.invokeLater(() ->
-                                    JOptionPane.showMessageDialog(frame, "Request failed: " + ex.getMessage(),
+                                    JOptionPane.showMessageDialog(finalFrame, "Request failed: " + ex.getMessage(),
                                             "Error", JOptionPane.ERROR_MESSAGE));
                             return null;
                         });
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(frame, "Invalid input: " + ex.getMessage(),
+                JOptionPane.showMessageDialog(finalFrame, "Invalid input: " + ex.getMessage(),
                         "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
