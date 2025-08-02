@@ -9,10 +9,13 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 /**
- * Simple Swing client that allows updating a slider's size via the REST API.
+ * Simple Swing client that allows updating a slider's size and position via the
+ * REST API.
  */
 public class SliderSwingClient {
+
     private static final String API_BASE = "http://localhost:8080/Web-Assignment2/resources/slider";
+    private static final HttpClient CLIENT = HttpClient.newHttpClient();
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(SliderSwingClient::createAndShow);
@@ -25,23 +28,45 @@ public class SliderSwingClient {
 
         JTextField idField = new JTextField(5);
         JTextField sizeField = new JTextField(5);
-        JButton update = new JButton("Update Size");
+        JTextField xField = new JTextField(5);
+        JTextField yField = new JTextField(5);
+        JButton update = new JButton("Update Slider");
 
         update.addActionListener((ActionEvent e) -> {
             try {
                 long id = Long.parseLong(idField.getText());
                 int size = Integer.parseInt(sizeField.getText());
-                String json = String.format("{\"id\":%d,\"size\":%d}", id, size);
+                int x = Integer.parseInt(xField.getText());
+                int y = Integer.parseInt(yField.getText());
+
+                String json = String.format("{\"id\":%d,\"size\":%d,\"x\":%d,\"y\":%d}",
+                        id, size, x, y);
+
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(API_BASE + "/" + id))
                         .header("Content-Type", "application/json")
                         .PUT(HttpRequest.BodyPublishers.ofString(json))
                         .build();
-                HttpClient.newHttpClient()
-                        .sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                        .thenAccept(resp -> System.out.println("Response: " + resp.body()));
+
+                CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                        .thenAccept(resp -> {
+                            String msg = "Status: " + resp.statusCode() + "\n" + resp.body();
+                            SwingUtilities.invokeLater(() -> {
+                                JOptionPane.showMessageDialog(frame, msg,
+                                        resp.statusCode() >= 200 && resp.statusCode() < 300 ? "Success" : "Error",
+                                        resp.statusCode() >= 200 && resp.statusCode() < 300 ? JOptionPane.INFORMATION_MESSAGE
+                                                : JOptionPane.ERROR_MESSAGE);
+                            });
+                        })
+                        .exceptionally(ex -> {
+                            SwingUtilities.invokeLater(() ->
+                                    JOptionPane.showMessageDialog(frame, "Request failed: " + ex.getMessage(),
+                                            "Error", JOptionPane.ERROR_MESSAGE));
+                            return null;
+                        });
             } catch (Exception ex) {
-                ex.printStackTrace();
+                JOptionPane.showMessageDialog(frame, "Invalid input: " + ex.getMessage(),
+                        "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
@@ -49,8 +74,13 @@ public class SliderSwingClient {
         frame.add(idField);
         frame.add(new JLabel("Size:"));
         frame.add(sizeField);
+        frame.add(new JLabel("X:"));
+        frame.add(xField);
+        frame.add(new JLabel("Y:"));
+        frame.add(yField);
         frame.add(update);
         frame.pack();
         frame.setVisible(true);
     }
 }
+
