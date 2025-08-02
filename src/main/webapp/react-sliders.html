@@ -21,17 +21,31 @@
       function SliderApp() {
         const [sliders, setSliders] = React.useState([]);
         const canvasRef = React.useRef(null);
+        const positionsRef = React.useRef([]);
 
         React.useEffect(() => {
           fetch(apiBase)
             .then(res => res.json())
-            .then(setSliders);
+            .then(data => {
+              setSliders(data);
+              positionsRef.current = data;
+            });
         }, []);
+
+        function draw() {
+          const canvas = canvasRef.current;
+          if (!canvas) return;
+          const ctx = canvas.getContext('2d');
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          positionsRef.current.forEach(s => {
+            ctx.fillRect(s.x || 0, s.y || 0, s.size || 10, s.size || 10);
+          });
+        }
 
         React.useEffect(() => {
           let animationFrame;
           const move = () => {
-            setSliders(prev => prev.map(s => {
+            positionsRef.current = positionsRef.current.map(s => {
               const dir = s.mvtDirection || 1;
               const travel = (s.currentTravel || 0) + Math.abs(dir);
               let newDir = dir;
@@ -44,22 +58,13 @@
                 currentTravel: travel % (s.maxTravel || 100),
                 mvtDirection: newDir
               };
-            }));
+            });
+            draw();
             animationFrame = requestAnimationFrame(move);
           };
           animationFrame = requestAnimationFrame(move);
           return () => cancelAnimationFrame(animationFrame);
         }, []);
-
-        React.useEffect(() => {
-          const canvas = canvasRef.current;
-          if (!canvas) return;
-          const ctx = canvas.getContext('2d');
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          sliders.forEach(s => {
-            ctx.fillRect(s.x || 0, s.y || 0, s.size || 10, s.size || 10);
-          });
-        }, [sliders]);
 
         function updateSlider(id, field, value) {
           const slider = sliders.find(s => s.id === id);
@@ -72,7 +77,8 @@
           })
             .then(res => res.json())
             .then(updated => {
-              setSliders(sliders.map(s => (s.id === id ? updated : s)));
+              setSliders(prev => prev.map(s => (s.id === id ? updated : s)));
+              positionsRef.current = positionsRef.current.map(s => (s.id === id ? { ...s, ...updated } : s));
             });
         }
 
