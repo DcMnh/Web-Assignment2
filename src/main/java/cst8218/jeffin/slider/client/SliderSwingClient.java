@@ -39,18 +39,24 @@ public class SliderSwingClient {
                 int x = Integer.parseInt(xField.getText());
                 int y = Integer.parseInt(yField.getText());
 
-                String json = String.format("{\"id\":%d,\"size\":%d,\"x\":%d,\"y\":%d}",
-                        id, size, x, y);
+                // Create a more complete JSON object with all required fields
+                String json = String.format(
+                    "{\"id\":%d,\"size\":%d,\"x\":%d,\"y\":%d,\"currentTravel\":0,\"maxTravel\":100,\"mvtDirection\":1,\"dirChangeCount\":0}",
+                    id, size, x, y);
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(API_BASE + "/" + id))
                         .header("Content-Type", "application/json")
+                        .header("Accept", "application/json")
                         .PUT(HttpRequest.BodyPublishers.ofString(json))
                         .build();
 
                 CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                         .thenAccept(resp -> {
-                            String msg = "Status: " + resp.statusCode() + "\n" + resp.body();
+                            String msg = "Status: " + resp.statusCode() + "\n";
+                            if (resp.body() != null && !resp.body().isEmpty()) {
+                                msg += "Response: " + resp.body();
+                            }
                             SwingUtilities.invokeLater(() -> {
                                 JOptionPane.showMessageDialog(frame, msg,
                                         resp.statusCode() >= 200 && resp.statusCode() < 300 ? "Success" : "Error",

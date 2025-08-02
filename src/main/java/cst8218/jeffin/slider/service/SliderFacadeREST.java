@@ -59,19 +59,7 @@ public class SliderFacadeREST extends AbstractFacade<Slider> {
         return Response.status(Response.Status.CREATED).location(location).entity(entity).build();
     }
 
-    @PUT
-    @Path("{id}")
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response edit(@PathParam("id") Long id, Slider entity) {
-        Slider existingSlider = super.find(id);
-        if (existingSlider == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-        entity.setId(id);
-        super.edit(entity);
-        // Return a 200 OK response with the updated entity
-        return Response.status(Response.Status.OK).entity(entity).build();
-    }
+
 
     @DELETE
     @Path("{id}")
