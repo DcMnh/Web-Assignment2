@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sliders React Page</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script crossorigin src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <style>
+      canvas { border:1px solid #000; }
+      ul { list-style: none; padding: 0; }
+      li { margin-bottom: 4px; }
+      input { width:60px; margin-left:4px; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+      const apiBase = 'resources/slider';
+
+      function SliderApp() {
+        const [sliders, setSliders] = React.useState([]);
+        const canvasRef = React.useRef(null);
+
+        React.useEffect(() => {
+          fetch(apiBase)
+            .then(res => res.json())
+            .then(setSliders);
+        }, []);
+
+        React.useEffect(() => {
+          let animationFrame;
+          const move = () => {
+            setSliders(prev => prev.map(s => {
+              const dir = s.mvtDirection || 1;
+              const travel = (s.currentTravel || 0) + Math.abs(dir);
+              let newDir = dir;
+              if (s.maxTravel && travel >= s.maxTravel) {
+                newDir = -dir;
+              }
+              return {
+                ...s,
+                x: (s.x || 0) + newDir,
+                currentTravel: travel % (s.maxTravel || 100),
+                mvtDirection: newDir
+              };
+            }));
+            animationFrame = requestAnimationFrame(move);
+          };
+          animationFrame = requestAnimationFrame(move);
+          return () => cancelAnimationFrame(animationFrame);
+        }, []);
+
+        React.useEffect(() => {
+          const canvas = canvasRef.current;
+          if (!canvas) return;
+          const ctx = canvas.getContext('2d');
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          sliders.forEach(s => {
+            ctx.fillRect(s.x || 0, s.y || 0, s.size || 10, s.size || 10);
+          });
+        }, [sliders]);
+
+        function updateSlider(id, field, value) {
+          const slider = sliders.find(s => s.id === id);
+          if (!slider) return;
+          const body = { ...slider, [field]: parseInt(value, 10) };
+          fetch(`${apiBase}/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+          })
+            .then(res => res.json())
+            .then(updated => {
+              setSliders(sliders.map(s => (s.id === id ? updated : s)));
+            });
+        }
+
+        return (
+          <div>
+            <canvas ref={canvasRef} width="500" height="300"></canvas>
+            <ul>
+              {sliders.map(s => (
+                <li key={s.id}>
+                  ID:{s.id}
+                  X:<input type="number" value={s.x || 0} onChange={e => updateSlider(s.id, 'x', e.target.value)} />
+                  Y:<input type="number" value={s.y || 0} onChange={e => updateSlider(s.id, 'y', e.target.value)} />
+                  Size:<input type="number" value={s.size || 0} onChange={e => updateSlider(s.id, 'size', e.target.value)} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById('root')).render(<SliderApp />);
+    </script>
+  </body>
+</html>
