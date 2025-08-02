@@ -69,7 +69,16 @@
         function updateSlider(id, field, value) {
           const slider = sliders.find(s => s.id === id);
           if (!slider) return;
-          const body = { ...slider, [field]: parseInt(value, 10) };
+          const numericValue = parseInt(value, 10);
+
+          // update the UI immediately so the canvas reflects the change
+          setSliders(prev => prev.map(s => (s.id === id ? { ...s, [field]: numericValue } : s)));
+          positionsRef.current = positionsRef.current.map(s =>
+            s.id === id ? { ...s, [field]: numericValue } : s
+          );
+          draw();
+
+          const body = { ...slider, [field]: numericValue };
           fetch(`${apiBase}/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -78,7 +87,10 @@
             .then(res => res.json())
             .then(updated => {
               setSliders(prev => prev.map(s => (s.id === id ? updated : s)));
-              positionsRef.current = positionsRef.current.map(s => (s.id === id ? { ...s, ...updated } : s));
+              positionsRef.current = positionsRef.current.map(s =>
+                s.id === id ? { ...s, ...updated } : s
+              );
+              draw();
             });
         }
 
