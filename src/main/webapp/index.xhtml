@@ -1,17 +1,51 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html">
-    <h:head>
-        <title>Facelet Title</title>
-        <h:outputStylesheet name="css/jsfcrud.css"/>
-    </h:head>
-    <h:body>
-        Hello from Facelets
-        <br />
-        <h:link outcome="/slider/List" value="Show All Slider Items"/>
-        <br />
-        <a href="react-sliders.html">React Sliders Page</a>
-    </h:body>
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
+<f:view locale="#{sliderController.locale}">
+
+  <h:head>
+    <title>#{bundle.Title}</title>
+    <h:outputStylesheet name="css/jsfcrud.css"/>
+  </h:head>
+
+  <h:body>
+    <h1><h:outputText value="#{bundle.Welcome}" /></h1>
+
+    <!-- Language Selector -->
+    <h:form>
+      <h:outputLabel value="#{bundle.SelectLanguage}:" />
+      <h:selectOneMenu value="#{sliderController.language}" onchange="submit()">
+        <f:selectItem itemValue="en" itemLabel="English" />
+        <f:selectItem itemValue="fr" itemLabel="Français" />
+      </h:selectOneMenu>
+    </h:form>
+
+    <br />
+
+    <!-- Navigation Links: visible to everyone -->
+    <h:form>
+      <p>
+        <h:link outcome="slider/List" value="#{bundle.CreateSliderShowAllLink}" />
+      </p>
+      <p>
+        <h:link outcome="appUser/List" value="#{bundle.CreateAppUserShowAllLink}" />
+      </p>
+    </h:form>
+
+    <!-- React Page -->
+    <p>
+      <h:outputText value="#{bundle.ReactPageLink}" />
+      <a href="react-sliders.html" target="_blank">React Sliders</a>
+    </p>
+
+    <p><i>Note: Access is restricted. If you do not have the correct role, you may receive a 403 Forbidden error.</i></p>
+
+  </h:body>
+
+</f:view>
 </html>
