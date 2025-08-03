@@ -7,10 +7,10 @@ import javax.swing.*;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Base64;
 
 /**
- * Simple Swing client that allows updating a slider's size and position via the
- * REST API.
+ * Swing client that allows updating a slider's size and position via the REST API.
  */
 public class SliderSwingClient {
 
@@ -26,17 +26,26 @@ public class SliderSwingClient {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new FlowLayout());
 
+        // Prompt for login once
+        String username = JOptionPane.showInputDialog("Enter username:");
+        String password = JOptionPane.showInputDialog("Enter password:");
+        String authHeader = "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
+
         JTextField idField = new JTextField(5);
         JTextField sizeField = new JTextField(5);
         JTextField xField = new JTextField(5);
         JTextField yField = new JTextField(5);
         JButton update = new JButton("Update Slider");
+<<<<<<< HEAD
         JButton testConnection = new JButton("Test API");
         JTextField statusField = new JTextField(30);
         statusField.setEditable(false);
         statusField.setText("Ready to update slider...");
         
         // Make frame effectively final for lambda expressions
+=======
+
+>>>>>>> 7b19026732f9d2ed08a06250b7fb4c64bae9357c
         final JFrame finalFrame = frame;
 
         // Test connection button
@@ -75,7 +84,6 @@ public class SliderSwingClient {
                 int x = Integer.parseInt(xField.getText());
                 int y = Integer.parseInt(yField.getText());
 
-                // Create a more complete JSON object with all required fields
                 String json = String.format(
                     "{\"id\":%d,\"size\":%d,\"x\":%d,\"y\":%d,\"currentTravel\":0,\"maxTravel\":100,\"mvtDirection\":1,\"dirChangeCount\":0}",
                     id, size, x, y);
@@ -84,6 +92,7 @@ public class SliderSwingClient {
                         .uri(URI.create(API_BASE + "/" + id))
                         .header("Content-Type", "application/json")
                         .header("Accept", "application/json")
+                        .header("Authorization", authHeader)
                         .PUT(HttpRequest.BodyPublishers.ofString(json))
                         .build();
 
@@ -126,4 +135,3 @@ public class SliderSwingClient {
         frame.setVisible(true);
     }
 }
-
