@@ -14,7 +14,7 @@ import java.net.http.HttpResponse;
  */
 public class SliderSwingClient {
 
-    private static final String API_BASE = "http://localhost:8080/Web-Assignment2/resources/slider";
+    private static final String API_BASE = "http://localhost:8080/A2/resources/slider";
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
 
     public static void main(String[] args) {
@@ -31,9 +31,42 @@ public class SliderSwingClient {
         JTextField xField = new JTextField(5);
         JTextField yField = new JTextField(5);
         JButton update = new JButton("Update Slider");
+        JButton testConnection = new JButton("Test API");
+        JTextField statusField = new JTextField(30);
+        statusField.setEditable(false);
+        statusField.setText("Ready to update slider...");
         
         // Make frame effectively final for lambda expressions
         final JFrame finalFrame = frame;
+
+        // Test connection button
+        testConnection.addActionListener((ActionEvent e) -> {
+            statusField.setText("Testing API connection...");
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(API_BASE))
+                    .header("Accept", "application/json")
+                    .GET()
+                    .build();
+
+            CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                    .thenAccept(resp -> {
+                        String responseMessage = "API Test - Status: " + resp.statusCode();
+                        if (resp.statusCode() >= 200 && resp.statusCode() < 300) {
+                            responseMessage += " - API is accessible!";
+                        } else {
+                            responseMessage += " - API Error: " + (resp.body() != null ? resp.body().substring(0, Math.min(100, resp.body().length())) + "..." : "Unknown error");
+                        }
+                        final String finalMessage = responseMessage;
+                        SwingUtilities.invokeLater(() -> {
+                            statusField.setText(finalMessage);
+                        });
+                    })
+                    .exceptionally(ex -> {
+                        SwingUtilities.invokeLater(() ->
+                                statusField.setText("API Test Failed: " + ex.getMessage()));
+                        return null;
+                    });
+        });
 
         update.addActionListener((ActionEvent e) -> {
             try {
@@ -56,27 +89,24 @@ public class SliderSwingClient {
 
                 CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                         .thenAccept(resp -> {
-                            String responseMessage = "Status: " + resp.statusCode() + "\n";
-                            if (resp.body() != null && !resp.body().isEmpty()) {
-                                responseMessage += "Response: " + resp.body();
+                            String responseMessage = "Status: " + resp.statusCode() + " - ";
+                            if (resp.statusCode() >= 200 && resp.statusCode() < 300) {
+                                responseMessage += "Success! Slider updated.";
+                            } else {
+                                responseMessage += "Error: " + (resp.body() != null ? resp.body() : "Unknown error");
                             }
                             final String finalMessage = responseMessage;
                             SwingUtilities.invokeLater(() -> {
-                                JOptionPane.showMessageDialog(finalFrame, finalMessage,
-                                        resp.statusCode() >= 200 && resp.statusCode() < 300 ? "Success" : "Error",
-                                        resp.statusCode() >= 200 && resp.statusCode() < 300 ? JOptionPane.INFORMATION_MESSAGE
-                                                : JOptionPane.ERROR_MESSAGE);
+                                statusField.setText(finalMessage);
                             });
                         })
                         .exceptionally(ex -> {
                             SwingUtilities.invokeLater(() ->
-                                    JOptionPane.showMessageDialog(finalFrame, "Request failed: " + ex.getMessage(),
-                                            "Error", JOptionPane.ERROR_MESSAGE));
+                                    statusField.setText("Request failed: " + ex.getMessage()));
                             return null;
                         });
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(finalFrame, "Invalid input: " + ex.getMessage(),
-                        "Error", JOptionPane.ERROR_MESSAGE);
+                statusField.setText("Invalid input: " + ex.getMessage());
             }
         });
 
@@ -88,7 +118,10 @@ public class SliderSwingClient {
         frame.add(xField);
         frame.add(new JLabel("Y:"));
         frame.add(yField);
+        frame.add(testConnection);
         frame.add(update);
+        frame.add(new JLabel("Status:"));
+        frame.add(statusField);
         frame.pack();
         frame.setVisible(true);
     }

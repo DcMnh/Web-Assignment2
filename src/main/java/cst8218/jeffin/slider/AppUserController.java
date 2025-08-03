@@ -1,6 +1,6 @@
 package cst8218.jeffin.slider;
 
-import cst8218.jeffin.slider.entity.Slider;
+import cst8218.jeffin.slider.entity.AppUser;
 import cst8218.jeffin.slider.util.JsfUtil;
 import cst8218.jeffin.slider.util.PaginationHelper;
 
@@ -20,35 +20,35 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceUnit;
 import jakarta.transaction.UserTransaction;
 
-@Named("sliderController")
+@Named("appUserController")
 @SessionScoped
-public class SliderController implements Serializable {
+public class AppUserController implements Serializable {
 
     @Resource
     private UserTransaction utx = null;
     @PersistenceUnit(unitName = "my_persistence_unit")
     private EntityManagerFactory emf = null;
 
-    private Slider current;
+    private AppUser current;
     private DataModel items = null;
-    private SliderJpaController jpaController = null;
+    private AppUserJpaController jpaController = null;
     private PaginationHelper pagination;
     private int selectedItemIndex;
 
-    public SliderController() {
+    public AppUserController() {
     }
 
-    public Slider getSelected() {
+    public AppUser getSelected() {
         if (current == null) {
-            current = new Slider();
+            current = new AppUser();
             selectedItemIndex = -1;
         }
         return current;
     }
 
-    private SliderJpaController getJpaController() {
+    private AppUserJpaController getJpaController() {
         if (jpaController == null) {
-            jpaController = new SliderJpaController(utx, emf);
+            jpaController = new AppUserJpaController(utx, emf);
         }
         return jpaController;
     }
@@ -59,12 +59,12 @@ public class SliderController implements Serializable {
 
                 @Override
                 public int getItemsCount() {
-                    return getJpaController().getSliderCount();
+                    return getJpaController().getAppUserCount();
                 }
 
                 @Override
                 public DataModel createPageDataModel() {
-                    return new ListDataModel(getJpaController().findSliderEntities(getPageSize(), getPageFirstItem()));
+                    return new ListDataModel(getJpaController().findAppUserEntities(getPageSize(), getPageFirstItem()));
                 }
             };
         }
@@ -77,13 +77,13 @@ public class SliderController implements Serializable {
     }
 
     public String prepareView() {
-        current = (Slider) getItems().getRowData();
+        current = (AppUser) getItems().getRowData();
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         return "View";
     }
 
     public String prepareCreate() {
-        current = new Slider();
+        current = new AppUser();
         selectedItemIndex = -1;
         return "Create";
     }
@@ -91,7 +91,7 @@ public class SliderController implements Serializable {
     public String create() {
         try {
             getJpaController().create(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("SliderCreated"));
+            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AppUserCreated"));
             return prepareCreate();
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
@@ -100,7 +100,7 @@ public class SliderController implements Serializable {
     }
 
     public String prepareEdit() {
-        current = (Slider) getItems().getRowData();
+        current = (AppUser) getItems().getRowData();
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         return "Edit";
     }
@@ -108,7 +108,7 @@ public class SliderController implements Serializable {
     public String update() {
         try {
             getJpaController().edit(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("SliderUpdated"));
+            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AppUserUpdated"));
             return "View";
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
@@ -117,7 +117,7 @@ public class SliderController implements Serializable {
     }
 
     public String destroy() {
-        current = (Slider) getItems().getRowData();
+        current = (AppUser) getItems().getRowData();
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         performDestroy();
         recreatePagination();
@@ -141,14 +141,14 @@ public class SliderController implements Serializable {
     private void performDestroy() {
         try {
             getJpaController().destroy(current.getId());
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("SliderDeleted"));
+            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AppUserDeleted"));
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
         }
     }
 
     private void updateCurrentItem() {
-        int count = getJpaController().getSliderCount();
+        int count = getJpaController().getAppUserCount();
         if (selectedItemIndex >= count) {
             // selected index cannot be bigger than number of items:
             selectedItemIndex = count - 1;
@@ -158,12 +158,14 @@ public class SliderController implements Serializable {
             }
         }
         if (selectedItemIndex >= 0) {
-            current = getJpaController().findSliderEntities(1, selectedItemIndex).get(0);
+            current = getJpaController().findAppUserEntities(1, selectedItemIndex).get(0);
         }
     }
 
     public DataModel getItems() {
-        items = getPagination().createPageDataModel();
+        if (items == null) {
+            items = getPagination().createPageDataModel();
+        }
         return items;
     }
 
@@ -188,24 +190,24 @@ public class SliderController implements Serializable {
     }
 
     public SelectItem[] getItemsAvailableSelectMany() {
-        return JsfUtil.getSelectItems(getJpaController().findSliderEntities(), false);
+        return JsfUtil.getSelectItems(getJpaController().findAppUserEntities(), false);
     }
 
     public SelectItem[] getItemsAvailableSelectOne() {
-        return JsfUtil.getSelectItems(getJpaController().findSliderEntities(), true);
+        return JsfUtil.getSelectItems(getJpaController().findAppUserEntities(), true);
     }
 
-    @FacesConverter(forClass = Slider.class)
-    public static class SliderControllerConverter implements Converter {
+    @FacesConverter(forClass = AppUser.class)
+    public static class AppUserControllerConverter implements Converter {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
             if (value == null || value.length() == 0) {
                 return null;
             }
-            SliderController controller = (SliderController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "sliderController");
-            return controller.getJpaController().findSlider(getKey(value));
+            AppUserController controller = (AppUserController) facesContext.getApplication().getELResolver().
+                    getValue(facesContext.getELContext(), null, "appUserController");
+            return controller.getJpaController().findAppUser(getKey(value));
         }
 
         java.lang.Long getKey(String value) {
@@ -225,11 +227,11 @@ public class SliderController implements Serializable {
             if (object == null) {
                 return null;
             }
-            if (object instanceof Slider) {
-                Slider o = (Slider) object;
+            if (object instanceof AppUser) {
+                AppUser o = (AppUser) object;
                 return getStringKey(o.getId());
             } else {
-                throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + Slider.class.getName());
+                throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + AppUser.class.getName());
             }
         }
 
