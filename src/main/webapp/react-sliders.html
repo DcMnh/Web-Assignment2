@@ -102,10 +102,14 @@
             <ul>
               {sliders.map(s => (
                 <li key={s.id}>
-                  ID:{s.id}&nbsp;&nbsp;&nbsp;   
+                  ID:{s.id}&nbsp;&nbsp;&nbsp;
                   X:<input type="number" value={s.x || 0} onChange={e => updateSlider(s.id, 'x', e.target.value)} />
                   Y:<input type="number" value={s.y || 0} onChange={e => updateSlider(s.id, 'y', e.target.value)} />
                   Size:<input type="number" value={s.size || 0} onChange={e => updateSlider(s.id, 'size', e.target.value)} />
+                  MaxTravel:<input type="number" value={s.maxTravel || 0} onChange={e => updateSlider(s.id, 'maxTravel', e.target.value)} />
+                  CurrentTravel:<input type="number" value={s.currentTravel || 0} onChange={e => updateSlider(s.id, 'currentTravel', e.target.value)} />
+                  MvtDirection:<input type="number" value={s.mvtDirection || 0} onChange={e => updateSlider(s.id, 'mvtDirection', e.target.value)} />
+                  DirChangeCount:<input type="number" value={s.dirChangeCount || 0} onChange={e => updateSlider(s.id, 'dirChangeCount', e.target.value)} />
                 </li>
               ))}
             </ul>
